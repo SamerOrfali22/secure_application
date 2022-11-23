@@ -4,16 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class SecureApplicationNative {
-  static const MethodChannel _channel =
-      const MethodChannel('secure_application');
+  static const MethodChannel _channel = const MethodChannel('secure_application');
 
   static void registerForEvents(VoidCallback lock, VoidCallback unlock) {
-    _channel.setMethodCallHandler(
-        (call) => secureApplicationHandler(call, lock, unlock));
+    _channel.setMethodCallHandler((call) => secureApplicationHandler(call, lock, unlock));
   }
 
-  static Future<dynamic> secureApplicationHandler(
-      MethodCall methodCall, lock, unlock) async {
+  static Future<dynamic> secureApplicationHandler(MethodCall methodCall, lock, unlock) async {
     switch (methodCall.method) {
       case 'lock':
         lock();
@@ -43,6 +40,14 @@ class SecureApplicationNative {
   }
 
   static Future opacity(double opacity) {
-    return _channel.invokeMethod('opacity', {"opacity": opacity});
+    return _channel.invokeMethod('opacity', {'opacity': opacity});
+  }
+
+  static Future locale(String languageCode) {
+    return _channel.invokeMethod('locale', {'languageCode': languageCode});
+  }
+
+  static Future disableCapture(bool isDisable) {
+    return _channel.invokeMethod('disableCapture', {'isDisable': isDisable});
   }
 }

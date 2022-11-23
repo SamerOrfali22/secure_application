@@ -14,24 +14,19 @@ enum SecureApplicationAuthenticationStatus { SUCCESS, FAILED, LOGOUT, NONE }
 /// on iOS/Android it will hide content in the app switcher
 /// on iOS/Android it will lock [SecureApplicationController.locked] = true when it become active again
 /// when locked if a gate depends on this controller it will display the blurry gate to obfuscate content
-class SecureApplicationController
-    extends ValueNotifier<SecureApplicationState> {
+class SecureApplicationController extends ValueNotifier<SecureApplicationState> {
   SecureApplicationController(SecureApplicationState value) : super(value);
 
-  final BehaviorSubject<SecureApplicationAuthenticationStatus>
-      _authenticationEventsController =
-      BehaviorSubject<SecureApplicationAuthenticationStatus>.seeded(
-          SecureApplicationAuthenticationStatus.NONE);
+  final BehaviorSubject<SecureApplicationAuthenticationStatus> _authenticationEventsController =
+      BehaviorSubject<SecureApplicationAuthenticationStatus>.seeded(SecureApplicationAuthenticationStatus.NONE);
 
   /// Broadcast stream that you can use to react to succesffull or unsuccessfull event
   /// default to [SecureApplicationAuthenticationStatus.NONE]
   /// [BehaviorSubject] stream so it will always emit last sent value as soon as you listen
   /// will trigger with the result of [SecureApllication.onNeedUnlock]
-  Stream<SecureApplicationAuthenticationStatus> get authenticationEvents =>
-      _authenticationEventsController.stream;
+  Stream<SecureApplicationAuthenticationStatus> get authenticationEvents => _authenticationEventsController.stream;
 
-  final BehaviorSubject<bool> _lockEventsController =
-      BehaviorSubject<bool>.seeded(false);
+  final BehaviorSubject<bool> _lockEventsController = BehaviorSubject<bool>.seeded(false);
 
   /// Broadcast stream that you can use to react to lock/unlock event
   /// default to [false]
@@ -64,8 +59,7 @@ class SecureApplicationController
 
   void authFailed({bool unlock = false}) {
     value = value.copyWith(authenticated: false);
-    _authenticationEventsController
-        .add(SecureApplicationAuthenticationStatus.FAILED);
+    _authenticationEventsController.add(SecureApplicationAuthenticationStatus.FAILED);
     if (unlock) {
       this.unlock();
     }
@@ -74,8 +68,7 @@ class SecureApplicationController
 
   void authSuccess({bool unlock = false}) {
     value = value.copyWith(authenticated: true);
-    _authenticationEventsController
-        .add(SecureApplicationAuthenticationStatus.SUCCESS);
+    _authenticationEventsController.add(SecureApplicationAuthenticationStatus.SUCCESS);
     if (unlock) {
       this.unlock();
     }
@@ -84,8 +77,7 @@ class SecureApplicationController
 
   void authLogout({bool unlock = false}) {
     value = value.copyWith(authenticated: false);
-    _authenticationEventsController
-        .add(SecureApplicationAuthenticationStatus.LOGOUT);
+    _authenticationEventsController.add(SecureApplicationAuthenticationStatus.LOGOUT);
     if (unlock) {
       this.unlock();
     }
@@ -108,8 +100,7 @@ class SecureApplicationController
 
   /// Use when you want your user to see content under [SecureGate]
   void unlock() {
-    SecureApplicationNative
-        .unlock(); //lock from native is removed when resumed but why not!
+    SecureApplicationNative.unlock(); //lock from native is removed when resumed but why not!
     if (value.locked) {
       value = value.copyWith(locked: false);
       notifyListeners();

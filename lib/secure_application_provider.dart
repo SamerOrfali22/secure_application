@@ -15,21 +15,19 @@ class SecureApplicationProvider extends InheritedWidget {
 
   /// get the [SecureApplicationController] of the context
   /// Use [listen] = false if you are outside of a widget builder (example in init state or in a bloc)
-  static SecureApplicationController? of(BuildContext context,
-      {bool listen = true}) {
+  static SecureApplicationController? of(
+    BuildContext context, {
+    bool listen = true,
+  }) {
     if (listen) {
-      return context
-          .dependOnInheritedWidgetOfExactType<SecureApplicationProvider>()!
-          .secureData;
+      return context.dependOnInheritedWidgetOfExactType<SecureApplicationProvider>()!.secureData;
     } else {
-      var widget = context
-          .getElementForInheritedWidgetOfExactType<SecureApplicationProvider>()!
-          .widget as SecureApplicationProvider;
+      final widget = context.getElementForInheritedWidgetOfExactType<SecureApplicationProvider>()!.widget
+          as SecureApplicationProvider;
       return widget.secureData;
     }
   }
 
   @override
-  bool updateShouldNotify(SecureApplicationProvider old) =>
-      old.secureData != secureData;
+  bool updateShouldNotify(SecureApplicationProvider old) => old.secureData != secureData;
 }

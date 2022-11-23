@@ -13,6 +13,7 @@ class SecureApplicationWeb {
   bool secured = false;
   StreamSubscription<html.Event>? onVC;
   final MethodChannel _channel;
+
   SecureApplicationWeb(this._channel);
 
   void secureApplication() {
@@ -22,8 +23,9 @@ class SecureApplicationWeb {
   }
 
   void visibilityEvent(html.Event e) {
-    if (html.document.visibilityState == 'hidden')
+    if (html.document.visibilityState == 'hidden') {
       _channel.invokeMethod('lock', 'web');
+    }
   }
 
   void unsecureApplication() {

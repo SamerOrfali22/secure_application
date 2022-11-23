@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:secure_application/secure_application_controller.dart';
 import 'package:secure_application/secure_application_native.dart';
 import 'package:secure_application/secure_application_provider.dart';
-import 'package:secure_application/secure_application_controller.dart';
 
 /// it will display a blurr over your content if locked
 ///
@@ -16,8 +16,7 @@ class SecureGate extends StatefulWidget {
 
   /// builder to display a child above the blurr window to allow your user to authenticate and unlock
   /// use the provided [SecureApplicationController] to unlock [SecureApplicationController] when user is authenticated
-  final Widget Function(BuildContext context,
-      SecureApplicationController? secureApplicationController)? lockedBuilder;
+  final Widget Function(BuildContext context, SecureApplicationController? secureApplicationController)? lockedBuilder;
 
   /// amount of blurr to allow more or less of the child be visible when locked
   /// default to 20
@@ -34,21 +33,20 @@ class SecureGate extends StatefulWidget {
     this.opacity = 0.6,
     this.lockedBuilder,
   }) : super(key: key);
+
   @override
   _SecureGateState createState() => _SecureGateState();
 }
 
-class _SecureGateState extends State<SecureGate>
-    with SingleTickerProviderStateMixin {
+class _SecureGateState extends State<SecureGate> with SingleTickerProviderStateMixin {
   bool _lock = false;
   late AnimationController _gateVisibility;
   SecureApplicationController? _secureApplicationController;
 
   @override
   void initState() {
-    _gateVisibility =
-        AnimationController(vsync: this, duration: kThemeAnimationDuration * 2)
-          ..addListener(_handleChange);
+    _gateVisibility = AnimationController(vsync: this, duration: kThemeAnimationDuration * 2)
+      ..addListener(_handleChange);
     SecureApplicationNative.opacity(widget.opacity);
 
     super.initState();
@@ -104,17 +102,14 @@ class _SecureGateState extends State<SecureGate>
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(
-                  sigmaX: widget.blurr * _gateVisibility.value,
-                  sigmaY: widget.blurr * _gateVisibility.value),
+                  sigmaX: widget.blurr * _gateVisibility.value, sigmaY: widget.blurr * _gateVisibility.value),
               child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade200
-                        .withOpacity(widget.opacity * _gateVisibility.value)),
+                decoration:
+                    BoxDecoration(color: Colors.grey.shade200.withOpacity(widget.opacity * _gateVisibility.value)),
               ),
             ),
           ),
-        if (_lock && widget.lockedBuilder != null)
-          widget.lockedBuilder!(context, _secureApplicationController),
+        if (_lock && widget.lockedBuilder != null) widget.lockedBuilder!(context, _secureApplicationController),
       ],
     );
   }

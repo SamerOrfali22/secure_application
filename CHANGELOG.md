@@ -1,6 +1,7 @@
 ## 3.8.0
 
-* [BUGFIX] No signature of method: build_…android() applicable for argument types: (build_…_run_closure2) ( #24 ) thanks @ghostman2013
+* [BUGFIX] No signature of method: build_…android() applicable for argument types: (build_…_
+  run_closure2) ( #24 ) thanks @ghostman2013
 * [BUGFIX] Fix null safety
 
 ## 3.7.3
@@ -31,22 +32,23 @@
 ## 3.5.1
 
 * Documentation tips
-  
+
 ## 3.5.0
 
 * Upgrade to RxDart 0.24.0
-  
+
 ## 3.4.1
 
 * Opacity is now propagated to IOS protection on task switcher
-  
+
 ## 3.3.2
 
 * Fix not implemented exception on Android when you exit the app
 
 ## 3.3.1
 
-* Fix if you wanted to start the application locked. issue: https://github.com/neckaros/secure_application/issues/1
+* Fix if you wanted to start the application locked.
+  issue: https://github.com/neckaros/secure_application/issues/1
 
 ## 3.3.0
 
@@ -66,7 +68,8 @@
 
 ## 3.0.7
 
-* allow to configure nativeRemoveDelay in secure_gate to let longer  app time to start especially on iOS
+* allow to configure nativeRemoveDelay in secure_gate to let longer app time to start especially on
+  iOS
 
 ## 3.0.6
 
