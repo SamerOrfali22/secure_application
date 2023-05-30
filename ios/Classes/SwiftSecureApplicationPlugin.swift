@@ -107,11 +107,14 @@ public class SwiftSecureApplicationPlugin: NSObject, FlutterPlugin {
         _screenProtector.setLocale(lang)
       }
     case "disableCapture":
-      if let args = call.arguments as? Dictionary<String, Any>,
-         let isDisable = args["isDisable"] as? Bool,
-         isDisable {
-        _screenProtector.startPreventRecording()
-      }
+        if let args = call.arguments as? Dictionary<String, Any>,
+                 let isDisable = args["isDisable"] as? Bool {
+                if isDisable {
+                  _screenProtector.startPreventRecording()
+                } else {
+                  _screenProtector.stopPreventRecording()
+                }
+              }
     default:
       break
     }
@@ -130,34 +133,48 @@ private final class _ScreenProtector {
   func setLocale(_ languageCode: String) {
     _locale = languageCode
   }
+    private var isPreventingRecording = false
+    
+    func startPreventRecording() {
+        isPreventingRecording = true
+        // Add observer for screen capture change notification
+        NotificationCenter.default.addObserver(
+          self,
+          selector: #selector(didDetectRecordingChange),
+          name: UIScreen.capturedDidChangeNotification,
+          object: nil
+        )
+        handleRecordingChange()
+      }
 
-  func startPreventRecording() {
-    // _window?.setScreenCaptureProtection()
-    _handleNotification()
-    NotificationCenter.default
-      .addObserver(self,
-                   selector: #selector(_didDetectRecording),
-                   name: UIScreen.capturedDidChangeNotification,
-                   object: nil)
-  }
+      func stopPreventRecording() {
+        isPreventingRecording = false
+        // Remove observer for screen capture change notification
+        NotificationCenter.default.removeObserver(
+          self,
+          name: UIScreen.capturedDidChangeNotification,
+          object: nil
+        )
+        handleRecordingChange()
+      }
 
-  @objc private func _didDetectRecording() {
-    DispatchQueue.main.async { [weak self] in
-      self?._handleNotification()
-    }
-  }
+      @objc private func didDetectRecordingChange() {
+        DispatchQueue.main.async { [weak self] in
+          self?.handleRecordingChange()
+        }
+      }
 
-  private func _handleNotification() {
-    if UIScreen.main.isCaptured {
-      _window?.isHidden = true
-      _presentWarningWindow()
-      _sound(false)
-    } else {
-      _window?.isHidden = false
-      _destroyWarningWindow()
-      _sound(true)
-    }
-  }
+      private func handleRecordingChange() {
+        if isPreventingRecording && UIScreen.main.isCaptured {
+          _window?.isHidden = true
+          _presentWarningWindow()
+//           _sound(false)
+        } else {
+          _window?.isHidden = false
+          _destroyWarningWindow()
+//           _sound(false)
+        }
+      }
 
   private func _presentWarningWindow() {
     guard let frame = _window?.bounds else { return }
@@ -195,58 +212,3 @@ private final class _ScreenProtector {
     _warningWindow?.removeFromSuperview()
     _warningWindow = nil
   }
-
-  private func _sound(_ isOn: Bool) {
-    func setVolume(_ volume: Float) {
-      let subviews = MPVolumeView().subviews
-      guard let volumeSlider = subviews.first(where: { NSStringFromClass($0.classForCoder) == "MPVolumeSlider" }) as? UISlider else { return }
-      volumeSlider.setValue(0, animated: false)
-    }
-
-    // Get the singleton instance.
-    let audioSession = AVAudioSession.sharedInstance()
-    do {
-      // Set the audio session category, mode, and options.
-      try audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
-      try audioSession.setActive(true)
-
-      if isOn {
-        // Set the audio session category, mode, and options.
-        try audioSession.setCategory(.playback, mode: .moviePlayback, options: [])
-        try audioSession.setActive(true)
-
-        // Save the original volume level, then turn up the system volume
-        _origVolume = audioSession.outputVolume
-
-        setVolume(0)
-      } else {
-        // Reset system audio?
-        try audioSession.setActive(false)
-        setVolume(_origVolume)
-      }
-    } catch {
-      print("Failed to set audio session category.", error.localizedDescription)
-    }
-  }
-}
-
-// extension UIView {
-//   func setScreenCaptureProtection() {
-//     let guardTextField = UITextField()
-//     guardTextField.backgroundColor = .white
-//     guardTextField.translatesAutoresizingMaskIntoConstraints = false
-//     guardTextField.isSecureTextEntry = true
-//     guardTextField.isUserInteractionEnabled = false
-//
-//     addSubview(guardTextField)
-//     NSLayoutConstraint.activate([
-//       guardTextField.topAnchor.constraint(equalTo: topAnchor, constant: 0),
-//       guardTextField.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 0),
-//       guardTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0),
-//       guardTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0),
-//     ])
-//
-//     layer.superlayer?.addSublayer(guardTextField.layer)
-//     guardTextField.layer.sublayers?.first?.addSublayer(layer)
-//   }
-// }
