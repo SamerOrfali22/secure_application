@@ -134,7 +134,7 @@ private final class _ScreenProtector {
     _locale = languageCode
   }
     private var isPreventingRecording = false
-    
+
     func startPreventRecording() {
         isPreventingRecording = true
         // Add observer for screen capture change notification
@@ -212,3 +212,4 @@ private final class _ScreenProtector {
     _warningWindow?.removeFromSuperview()
     _warningWindow = nil
   }
+}
